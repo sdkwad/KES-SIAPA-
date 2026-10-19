@@ -4,7 +4,7 @@
     {
       "name": "cluedo",
       "runtimeExecutable": "powershell",
-      "runtimeArgs": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "C:\\Users\\Salim Danisy\\OneDrive - FORTUNE BIT SOLUTIONS SDN BHD\\Desktop\\Cluedo\\tools\\serve.ps1", "-Port", "8090"],
+      "runtimeArgs": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "tools\\serve.ps1", "-Port", "8090"],
       "port": 8090,
       "url": "http://localhost:8090"
     }

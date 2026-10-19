@@ -1,0 +1,15 @@
+{
+  "name": "Kes Siapa? — Cluedo Malaysia",
+  "short_name": "Kes Siapa?",
+  "description": "Cluedo edisi Malaysia. Satu telefon di meja, setiap detektif imbas QR.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f1417",
+  "theme_color": "#0f1417",
+  "lang": "ms",
+  "icons": [
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
