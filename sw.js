@@ -1,5 +1,5 @@
 /* Service worker Kes Siapa?: rangkaian dulu (supaya kemas kini terus sampai), cache sebagai sandaran bila tiada internet. */
-const VERSION = 'kessiapa-v2';
+const VERSION = 'kessiapa-v3';
 const FILES = ['./', 'index.html', 'css/style.css', 'js/qr.js', 'js/app.js', 'manifest.webmanifest', 'icons/icon.svg'];
 
 self.addEventListener('install', (e) => {

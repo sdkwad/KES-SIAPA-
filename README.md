@@ -6,12 +6,14 @@ Satu telefon di tengah meja jadi **Meja Siasatan**. Setiap detektif imbas QR gun
 **kad tangan & buku nota** — tak perlu download app, tak perlu pass telefon.
 
 ## Cara main
-1. Telefon meja: masukkan 3–6 nama ikut susunan duduk → **Agih Kad & Jana QR**.
+1. Telefon meja: masukkan 3–8 nama ikut susunan duduk, pilih saiz kes → **Agih Kad & Jana QR**.
+   - **Klasik** (21 kad): 3–6 detektif.
+   - **Besar** (27 kad: +2 suspek, +2 senjata, +2 bilik): 3–8 detektif, wajib untuk 7–8.
 2. Setiap detektif imbas QR mereka (atau **Hantar link** ke WhatsApp). Tiada internet? Guna QR teks (senarai kad sahaja).
 3. Pada giliran: **Siasat** (suspek + senjata + bilik). Meja semak ikut arah jam siapa boleh sangkal.
-   Detektif itu tunjuk satu kad dari telefonnya kepada penanya sahaja.
-4. Catat dalam buku nota grid di telefon sendiri (✓ ada, ✗ tiada, ? syak). Deduksi automatik isi petak yang pasti
-   dan kesan jawapan sampul.
+   Detektif itu tunjuk satu kad dari telefonnya kepada penanya sahaja. Tersilap tekan? Butang undo di atas.
+4. Di telefon sendiri tekan **Catat siasatan** (siapa tanya, 3 kad, siapa tunjuk). Buku nota tanda ✗ untuk yang
+   tiada kad, dan deduksi automatik cari kad yang pasti serta jawapan sampul. Boleh juga ketik petak sendiri.
 5. **Tuduhan muktamad**: tepat = menang, salah = tersingkir (masih kena tunjuk kad).
 
 ## Struktur
