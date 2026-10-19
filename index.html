@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Misteri Mansion — Cluedo Meja + QR Pemain</title>
+<title>Kes Siapa?</title>
 <style>
 :root{--bg:#0f172a;--card:#1e293b;--card2:#334155;--bdr:#475569;--txt:#f8fafc;--mut:#94a3b8;--pri:#eab308;--acc:#38bdf8;--err:#ef4444;--ok:#22c55e}
 *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,sans-serif;-webkit-tap-highlight-color:transparent}
@@ -628,7 +628,7 @@ function render(){
 
   const p=S.players[S.turn];
   let h=`<div class="top">
-    <div class="brand">🕵️ MISTERI MANSION</div>
+    <div class="brand">🕵️ KES SIAPA?</div>
     <div style="display:flex;gap:6px">
       <button class="btn btn-ok btn-sm" onclick="downloadFile()">⬇️ Fail .HTML</button>
       ${S.phase!=="SETUP"?`<button class="btn btn-acc btn-sm" onclick="S.qrIdx=S.turn;render()">📲 QR Pemain</button>`:""}
