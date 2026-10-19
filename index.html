@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Misteri Mansion — Cluedo Meja + QR Pemain</title>
+<style>
+:root{--bg:#0f172a;--card:#1e293b;--card2:#334155;--bdr:#475569;--txt:#f8fafc;--mut:#94a3b8;--pri:#eab308;--acc:#38bdf8;--err:#ef4444;--ok:#22c55e}
+*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,sans-serif;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--txt);display:flex;justify-content:center;padding:10px;min-height:100vh}
+#app{width:100%;max-width:460px;display:flex;flex-direction:column;gap:12px;padding-bottom:50px}
+.top{display:flex;justify-content:space-between;align-items:center;background:var(--card);padding:10px 14px;border-radius:12px;border:1px solid var(--bdr);flex-wrap:wrap;gap:8px}
+.brand{font-weight:800;color:var(--pri);font-size:1rem}
+.card{background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:15px}
+.title{font-size:1.1rem;font-weight:800;margin-bottom:4px}
+.sub{font-size:.83rem;color:var(--mut);line-height:1.42;margin-bottom:12px}
+.curtain{background:linear-gradient(145deg,#1e1b4b,#0f172a);border:2px dashed var(--pri);text-align:center;padding:20px 15px;border-radius:14px}
+.target{font-size:1.35rem;font-weight:900;color:var(--pri);margin:6px 0 12px;text-transform:uppercase}
+.btn{width:100%;border:none;border-radius:10px;padding:12px;font-size:.9rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:8px}
+.btn:active{transform:scale(.98)}
+.btn-pri{background:var(--pri);color:#0f172a}
+.btn-acc{background:var(--acc);color:#0f172a}
+.btn-err{background:var(--err);color:#fff}
+.btn-ok{background:var(--ok);color:#052e16}
+.btn-out{background:transparent;color:var(--txt);border:1px solid var(--bdr)}
+.btn-sm{padding:6px 10px;font-size:.75rem;width:auto;margin:0}
+.row{display:flex;gap:6px;margin-bottom:8px;align-items:center}
+input{flex:1;background:var(--bg);border:1px solid var(--bdr);color:var(--txt);padding:10px;border-radius:8px;font-size:.9rem}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.item{background:var(--bg);border:1.5px solid var(--bdr);border-radius:10px;padding:9px 6px;text-align:center;cursor:pointer;font-size:.8rem;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:3px}
+.item.sel{border-color:var(--pri);background:rgba(234,179,8,.16);color:var(--pri)}
+.item.lock{opacity:.3;pointer-events:none}
+.mini{font-size:.63rem;padding:2px 5px;border-radius:4px;background:var(--card2);color:var(--mut)}
+.strip{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+.chip{padding:5px 10px;border-radius:8px;font-size:.75rem;font-weight:700;background:var(--card);border:1px solid var(--bdr);white-space:nowrap;cursor:pointer}
+.chip.act{border-color:var(--pri);color:var(--pri);background:rgba(234,179,8,.15)}
+.chip.elim{opacity:.45;text-decoration:line-through}
+.cat{font-size:.75rem;text-transform:uppercase;color:var(--pri);margin:12px 0 6px;font-weight:800}
+.nb-r{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:var(--bg);border:1px solid var(--bdr);border-radius:8px;margin-bottom:5px;font-size:.84rem}
+.nb-s{font-size:.72rem;font-weight:700;padding:3px 8px;border-radius:6px;cursor:pointer}
+.s-own{background:rgba(34,197,94,.2);color:#86efac}
+.s-pub{background:rgba(56,189,248,.2);color:#7dd3fc}
+.s-see{background:rgba(239,68,68,.2);color:#fca5a5}
+.s-unk{background:var(--card2);color:var(--txt)}
+.s-x{background:rgba(148,163,184,.2);color:var(--mut);text-decoration:line-through}
+.s-sus{background:rgba(234,179,8,.25);color:var(--pri);border:1px solid var(--pri)}
+.log-box{max-height:220px;overflow-y:auto;padding-right:2px}
+.log{padding:8px 10px;border-radius:8px;background:var(--bg);border-left:3px solid var(--acc);margin-bottom:6px;font-size:.8rem;line-height:1.38}
+.modal{position:fixed;inset:0;background:rgba(2,6,23,.9);display:flex;justify-content:center;align-items:flex-end;z-index:50;padding:10px}
+.sheet{width:100%;max-width:460px;max-height:88vh;overflow-y:auto;background:var(--card);border:1px solid var(--bdr);border-radius:16px;padding:15px}
+.qr-wrap{background:#fff;padding:12px;border-radius:12px;display:inline-block;margin:8px auto}
+.code-pill{background:var(--bg);border:1px dashed var(--acc);color:var(--acc);font-family:monospace;font-size:.95rem;font-weight:800;padding:8px 12px;border-radius:8px;margin:6px 0;letter-spacing:.5px;word-break:break-all}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--bg);padding:4px;border-radius:9px;margin-bottom:10px}
+.tab{padding:7px;text-align:center;font-size:.76rem;font-weight:700;border-radius:6px;cursor:pointer;color:var(--mut)}
+.tab.act{background:var(--pri);color:#0f172a}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const CARDS={
+  suspects:[
+    {id:"s1",name:"Kol. Mustard",e:"🪖",t:"Suspek"},{id:"s2",name:"Cik Scarlett",e:"💃",t:"Suspek"},
+    {id:"s3",name:"Prof. Plum",e:"🎓",t:"Suspek"},{id:"s4",name:"Insp. Green",e:"🕵️",t:"Suspek"},
+    {id:"s5",name:"Pn. Peacock",e:"🦚",t:"Suspek"},{id:"s6",name:"Dr. Orchid",e:"🧪",t:"Suspek"}
+  ],
+  weapons:[
+    {id:"w1",name:"Belati Perak",e:"🗡️",t:"Senjata"},{id:"w2",name:"Kaki Lilin",e:"🕯️",t:"Senjata"},
+    {id:"w3",name:"Pistol Lama",e:"🔫",t:"Senjata"},{id:"w4",name:"Tali Gantung",e:"🪢",t:"Senjata"},
+    {id:"w5",name:"Paip Besi",e:"🔧",t:"Senjata"},{id:"w6",name:"Perengkuh",e:"🛠️",t:"Senjata"}
+  ],
+  rooms:[
+    {id:"r1",name:"Perpustakaan",e:"📚",t:"Bilik"},{id:"r2",name:"Dapur Utama",e:"🍳",t:"Bilik"},
+    {id:"r3",name:"Dewan Tari",e:"🪩",t:"Bilik"},{id:"r4",name:"Bilik Belajar",e:"🖥️",t:"Bilik"},
+    {id:"r5",name:"Bilik Biliard",e:"🎱",t:"Bilik"},{id:"r6",name:"Rumah Kaca",e:"🌿",t:"Bilik"},
+    {id:"r7",name:"Ruang Makan",e:"🍽️",t:"Bilik"},{id:"r8",name:"Ruang Tamu",e:"🛋️",t:"Bilik"},
+    {id:"r9",name:"Balai Cerap",e:"🔭",t:"Bilik"}
+  ]
+};
+const ALL=[...CARDS.suspects,...CARDS.weapons,...CARDS.rooms];
+const CMAP=Object.fromEntries(ALL.map(c=>[c.id,c]));
+const getC=id=>CMAP[id];
+const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+const shuf=a=>{const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]]}return r};
+
+// ============================================================================
+// PENJANA KOD QR OFFLINE (100% Tanpa Internet / Tanpa Library Luar, V1–V9 ECC-L)
+// ============================================================================
+const QR=(()=>{
+  // [totalCodewords, ecCodewordsPerBlock, numBlocks, alignCenters]
+  const VINFO=[
+    null,
+    [26,7,1,[]],[44,10,1,[6,18]],[70,15,1,[6,22]],[100,20,1,[6,26]],
+    [134,26,1,[6,30]],[172,18,2,[6,34]],[196,20,2,[6,22,38]],
+    [242,24,2,[6,24,42]],[292,30,2,[6,26,46]]
+  ];
+  const EXP=new Uint8Array(512),LOG=new Uint8Array(256);
+  for(let i=0,x=1;i<255;i++){EXP[i]=x;EXP[i+255]=x;LOG[x]=i;x=(x<<1)^(x&128?285:0);}
+  function rsEncode(data,ecLen){
+    let gen=[1];
+    for(let i=0;i<ecLen;i++){
+      const nxt=new Array(gen.length+1).fill(0);
+      for(let j=0;j<gen.length;j++){
+        nxt[j]^=gen[j];
+        nxt[j+1]^=gen[j]?EXP[LOG[gen[j]]+i]:0;
+      }
+      gen=nxt;
+    }
+    const res=new Uint8Array(ecLen);
+    for(let i=0;i<data.length;i++){
+      const fb=data[i]^res[0];
+      for(let j=0;j<ecLen-1;j++)res[j]=res[j+1]^(fb?EXP[LOG[fb]+LOG[gen[j+1]]]:0);
+      res[ecLen-1]=fb?EXP[LOG[fb]+LOG[gen[ecLen]]]:0;
+    }
+    return res;
+  }
+  function makeSVG(text,size=190){
+    const bytes=new TextEncoder().encode(text);
+    let ver=1;
+    while(ver<=9){
+      const [tot,ec,blk]=VINFO[ver];
+      const cap=tot-ec*blk-2;
+      if(bytes.length<=cap)break;
+      ver++;
+    }
+    if(ver>9)return`<div style="color:#000;padding:10px;font-size:.75rem">Teks terlalu panjang untuk QR.</div>`;
+    const [tot,ecLen,blocks,align]=VINFO[ver];
+    const dataLen=tot-ecLen*blocks;
+    const bits=[];
+    const pushB=(v,n)=>{for(let i=n-1;i>=0;i--)bits.push((v>>i)&1);};
+    pushB(4,4); // Byte mode
+    pushB(bytes.length,8);
+    bytes.forEach(b=>pushB(b,8));
+    for(let i=0;i<4&&bits.length<dataLen*8;i++)bits.push(0);
+    while(bits.length%8!==0)bits.push(0);
+    const dataBytes=new Uint8Array(dataLen);
+    for(let i=0;i<bits.length/8;i++){
+      let b=0;for(let j=0;j<8;j++)b=(b<<1)|bits[i*8+j];
+      dataBytes[i]=b;
+    }
+    for(let i=bits.length/8,p=0;i<dataLen;i++,p^=1)dataBytes[i]=p?17:236;
+
+    const dBlocks=[],eBlocks=[];
+    const bSize=dataLen/blocks;
+    for(let b=0;b<blocks;b++){
+      const sub=dataBytes.slice(b*bSize,(b+1)*bSize);
+      dBlocks.push(sub);
+      eBlocks.push(rsEncode(sub,ecLen));
+    }
+    const finalBytes=[];
+    for(let i=0;i<bSize;i++)for(let b=0;b<blocks;b++)finalBytes.push(dBlocks[b][i]);
+    for(let i=0;i<ecLen;i++)for(let b=0;b<blocks;b++)finalBytes.push(eBlocks[b][i]);
+
+    const dim=17+ver*4;
+    const mat=Array.from({length:dim},()=>new Int8Array(dim));
+    const rsv=Array.from({length:dim},()=>new Uint8Array(dim));
+    const setM=(r,c,v)=>{mat[r][c]=v?1:0;rsv[r][c]=1;};
+    const finder=(R,C)=>{
+      for(let r=-1;r<=7;r++)for(let c=-1;c<=7;c++){
+        const rr=R+r,cc=C+c;
+        if(rr<0||rr>=dim||cc<0||cc>=dim)continue;
+        const v=(r>=0&&r<=6&&(c===0||c===6))||(c>=0&&c<=6&&(r===0||r===6))||(r>=2&&r<=4&&c>=2&&c<=4);
+        setM(rr,cc,v);
+      }
+    };
+    finder(0,0);finder(0,dim-7);finder(dim-7,0);
+    for(let i=8;i<dim-8;i++){setM(6,i,i%2===0);setM(i,6,i%2===0);}
+    const aLast=align[align.length-1];
+    for(let r of align)for(let c of align){
+      // Langkau 3 sudut finder sahaja; corak yang bertindih garis timing (V7+) mesti dilukis
+      if((r===6&&c===6)||(r===6&&c===aLast)||(r===aLast&&c===6))continue;
+      for(let dr=-2;dr<=2;dr++)for(let dc=-2;dc<=2;dc++){
+        setM(r+dr,c+dc,Math.abs(dr)===2||Math.abs(dc)===2||(dr===0&&dc===0));
+      }
+    }
+    setM(dim-8,8,1);
+    for(let i=0;i<9;i++){if(!rsv[8][i])rsv[8][i]=1;if(!rsv[i][8])rsv[i][8]=1;}
+    for(let i=0;i<8;i++){if(!rsv[8][dim-1-i])rsv[8][dim-1-i]=1;if(!rsv[dim-1-i][8])rsv[dim-1-i][8]=1;}
+    if(ver>=7){
+      let rem=ver;for(let i=0;i<12;i++)rem=(rem<<1)^((rem>>11)*0x1F25);
+      const vBits=(ver<<12)|rem;
+      for(let i=0;i<18;i++){
+        const bit=(vBits>>i)&1,a=dim-11+(i%3),b=Math.floor(i/3);
+        setM(a,b,bit);setM(b,a,bit);
+      }
+    }
+
+    let bitIdx=0,up=true;
+    for(let c=dim-1;c>0;c-=2){
+      if(c===6)c--;
+      for(let i=0;i<dim;i++){
+        const r=up?dim-1-i:i;
+        for(let dc=0;dc<2;dc++){
+          const cc=c-dc;
+          if(!rsv[r][cc]){
+            const bit=bitIdx<finalBytes.length*8?((finalBytes[bitIdx>>3]>>(7-(bitIdx&7)))&1):0;
+            bitIdx++;
+            mat[r][cc]=bit^((r+cc)%2===0?1:0); // Mask 0
+          }
+        }
+      }
+      up=!up;
+    }
+    // Format info for Level L (01) + Mask 0 (000) -> 01000 -> BCH & XOR 0x5412 = 0x77C4
+    const fmt=0x77C4;
+    const fPos1=[[8,0],[8,1],[8,2],[8,3],[8,4],[8,5],[8,7],[8,8],[7,8],[5,8],[4,8],[3,8],[2,8],[1,8],[0,8]];
+    for(let i=0;i<15;i++){
+      const bit=(fmt>>(14-i))&1;
+      const [r1,c1]=fPos1[i];
+      mat[r1][c1]=bit;
+      if(i<7)mat[dim-1-i][8]=bit;
+      else mat[8][dim-15+i]=bit;
+    }
+
+    let paths="";
+    for(let r=0;r<dim;r++)for(let c=0;c<dim;c++)if(mat[r][c])paths+=`M${c},${r}h1v1h-1z`;
+    return`<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 -2 ${dim+4} ${dim+4}" width="${size}" height="${size}" shape-rendering="crispEdges"><rect x="-2" y="-2" width="${dim+4}" height="${dim+4}" fill="#fff"/><path d="${paths}" fill="#000"/></svg>`;
+  }
+  return{makeSVG};
+})();
+
+// ============================================================================
+// PENGURUSAN STATE & KOD PEMAIN (COMPANION MODE vs TABLE HOST MODE)
+// ============================================================================
+const SAVE_KEY="misteri_mansion_qr_v1";
+// Alamat awam game (isi selepas hosting, contoh "https://cluedo-xxx.vercel.app/").
+// Telefon kawan tak boleh buka "file://" atau "localhost" telefon meja,
+// jadi QR guna alamat ini bila game dibuka secara tempatan.
+const PUBLIC_URL="";
+const isLocalHost=()=>location.protocol==="file:"||/^(localhost|127\.|\[::1\]|192\.168\.|10\.)/.test(location.hostname);
+const qrBroken=()=>isLocalHost()&&!PUBLIC_URL;
+const playerUrl=code=>`${isLocalHost()&&PUBLIC_URL?PUBLIC_URL:location.href.split("#")[0]}#c=${code}`;
+const qrWarn=()=>qrBroken()?`<div class="sub" style="color:var(--err);border:1px solid var(--err);border-radius:8px;padding:8px;margin:6px 0">⚠️ Game dibuka dari fail/localhost — QR Web tak boleh dibuka di telefon kawan. Buka game melalui alamat web (https://...) atau guna <b>QR Teks Kad Terus</b>.</div>`:"";
+
+function encodePlayerCode(name,hand,pub){
+  // Format padat: Nama|h1,h2,h3|p1,p2
+  const raw=`${name}|${hand.join(",")}|${pub.join(",")}`;
+  return btoa(unescape(encodeURIComponent(raw))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+}
+
+function decodePlayerCode(code){
+  try{
+    let b64=code.trim().replace(/-/g,"+").replace(/_/g,"/");
+    while(b64.length%4)b64+="=";
+    const raw=decodeURIComponent(escape(atob(b64)));
+    const [name,hStr,pStr]=raw.split("|");
+    if(!name||!hStr)return null;
+    const hand=hStr.split(",").filter(id=>getC(id));
+    const pub=(pStr?pStr.split(","):[]).filter(id=>getC(id));
+    if(!hand.length)return null;
+    return{name,hand,pub};
+  }catch(e){return null;}
+}
+
+let S={
+  appMode:"HOST", // "HOST" (Telefon Utama di Meja) | "PLAYER" (Telefon Buku Nota Pemain)
+  phase:"SETUP",
+  names:["Salim","Ali","Abu","Siti"],
+  revIdx:0,
+  open:false,
+  nb:false,
+  qrIdx:null,
+  qrTab:"APP", // "APP" (QR Link/Kod Buku Nota) | "TXT" (QR Teks Kad Terus)
+  round:1,
+  turn:0,
+  vault:{},
+  pub:[],
+  players:[],
+  act:{},
+  logs:[],
+  win:"",
+  reason:"",
+  // State untuk Mod Telefon Pemain (Companion)
+  comp:{
+    codeInput:"",
+    name:"",
+    hand:[],
+    pub:[],
+    nb:{},
+    zoomCard:null
+  }
+};
+
+// Semak jika dibuka melalui imbasan QR URL (#c=...)
+function checkHashCompanion(){
+  const h=location.hash||"";
+  const m=h.match(/[#&]c=([^&]+)/);
+  if(m&&m[1]){
+    const data=decodePlayerCode(m[1]);
+    if(data){
+      loadCompanionData(data,m[1]);
+      return true;
+    }
+  }
+  return false;
+}
+
+function loadCompanionData(data,codeStr){
+  const nb={};
+  const prevSaved=localStorage.getItem(SAVE_KEY+"_comp_"+codeStr);
+  let prevNb=null;
+  try{if(prevSaved)prevNb=JSON.parse(prevSaved);}catch(e){}
+
+  ALL.forEach(c=>{
+    if(data.hand.includes(c.id))nb[c.id]={s:"OWN",n:"Kad Saya ✅"};
+    else if(data.pub.includes(c.id))nb[c.id]={s:"PUB",n:"Bukti Meja 📢"};
+    else if(prevNb&&prevNb[c.id]&&!["OWN","PUB"].includes(prevNb[c.id].s))nb[c.id]=prevNb[c.id];
+    else nb[c.id]={s:"UNK",n:"❓ Belum Pasti"};
+  });
+  S.appMode="PLAYER";
+  S.comp={codeInput:codeStr||"",name:data.name,hand:data.hand,pub:data.pub,nb,zoomCard:null};
+}
+
+try{
+  const saved=localStorage.getItem(SAVE_KEY);
+  if(saved){
+    const parsed=JSON.parse(saved);
+    if(parsed&&parsed.phase)S=Object.assign(S,parsed);
+  }
+}catch(e){}
+checkHashCompanion();
+window.addEventListener("hashchange",()=>{if(checkHashCompanion())render();});
+
+function save(){
+  try{
+    localStorage.setItem(SAVE_KEY,JSON.stringify(S));
+    if(S.appMode==="PLAYER"&&S.comp.codeInput){
+      localStorage.setItem(SAVE_KEY+"_comp_"+S.comp.codeInput,JSON.stringify(S.comp.nb));
+    }
+  }catch(e){}
+}
+
+function downloadFile(){
+  const clone=document.documentElement.cloneNode(true);
+  const appEl=clone.querySelector("#app");
+  if(appEl)appEl.innerHTML="";
+  const html="<!DOCTYPE html>\n"+clone.outerHTML;
+  const url=URL.createObjectURL(new Blob([html],{type:"text/html;charset=utf-8"}));
+  const a=document.createElement("a");
+  a.href=url;
+  a.download="cluedo-meja-qr.html";
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+// ============================================================================
+// LOGIK TELEFON UTAMA (MEJA)
+// ============================================================================
+function start(){
+  const nms=S.names.map(n=>n.trim()).filter(Boolean);
+  if(nms.length<3||nms.length>6)return alert("Masukkan 3 hingga 6 pemain!");
+  const uniq=new Set(nms.map(n=>n.toLowerCase()));
+  if(uniq.size!==nms.length)return alert("Nama setiap pemain mestilah berbeza!");
+  S.names=[...nms];
+
+  const sp=shuf(CARDS.suspects),wp=shuf(CARDS.weapons),rp=shuf(CARDS.rooms);
+  S.vault={suspect:sp[0].id,weapon:wp[0].id,room:rp[0].id};
+  const rem=shuf([...sp.slice(1),...wp.slice(1),...rp.slice(1)]).map(c=>c.id);
+  const cpp=Math.floor(rem.length/nms.length),dealt=cpp*nms.length;
+  S.pub=rem.slice(dealt);
+
+  S.players=nms.map((name,i)=>{
+    const hand=rem.slice(i*cpp,(i+1)*cpp),nb={};
+    ALL.forEach(c=>{
+      if(hand.includes(c.id))nb[c.id]={s:"OWN",n:"Kad Saya ✅"};
+      else if(S.pub.includes(c.id))nb[c.id]={s:"PUB",n:"Bukti Meja 📢"};
+      else nb[c.id]={s:"UNK",n:"❓ Belum Pasti"};
+    });
+    const code=encodePlayerCode(name,hand,S.pub);
+    return{name,hand,nb,code,lastRoom:null,elim:false};
+  });
+
+  Object.assign(S,{
+    appMode:"HOST",
+    phase:"DEAL",
+    revIdx:0,
+    open:false,
+    nb:false,
+    qrIdx:null,
+    round:1,
+    turn:0,
+    act:{},
+    logs:[],
+    win:"",
+    reason:""
+  });
+  render();
+}
+
+function pickDef(arr,p){
+  const sus=arr.find(c=>p.nb[c.id].s==="SUS");
+  if(sus)return sus.id;
+  const unk=arr.find(c=>p.nb[c.id].s==="UNK");
+  return unk?unk.id:arr[0].id;
+}
+
+function openForm(type){
+  const p=S.players[S.turn];
+  const rms=CARDS.rooms.filter(r=>type==="ACC"||r.id!==p.lastRoom);
+  S.act={
+    s:pickDef(CARDS.suspects,p),
+    w:pickDef(CARDS.weapons,p),
+    r:pickDef(rms,p),
+    logs:[],
+    dIdx:null,
+    matches:[],
+    shown:null
+  };
+  S.phase=type==="ACC"?"ACC_FORM":"SUG_FORM";
+  render();
+}
+
+function submitSug(){
+  const {s,w,r}=S.act,p=S.players[S.turn],n=S.players.length;
+  p.lastRoom=r;
+  const targets=[s,w,r],passed=[];
+  for(let i=1;i<n;i++){
+    const idx=(S.turn+i)%n,cand=S.players[idx];
+    const m=cand.hand.filter(id=>targets.includes(id));
+    if(m.length>0){
+      S.act.dIdx=idx;S.act.matches=m;
+      S.act.logs.push(`⚠️ <b>${esc(cand.name)}</b> ADA BUKTI untuk menyangkal!`);
+      break;
+    }else{
+      passed.push(esc(cand.name));
+      S.act.logs.push(`❌ <b>${esc(cand.name)}</b> tiada kad yang dituduh.`);
+    }
+  }
+  const passTxt=passed.length?` (Tiada kad: ${passed.join(", ")})`:"";
+  const txt=`<b>Pus.${S.round}:</b> ${esc(p.name)} syak [${getC(s).name}, ${getC(w).name}, ${getC(r).name}]`;
+  if(S.act.dIdx!==null){
+    S.logs.unshift(`${txt}${passTxt} 👉 Disangkal oleh <b>${esc(S.players[S.act.dIdx].name)}</b>.`);
+    S.phase="DISP_CURTAIN";
+  }else{
+    S.logs.unshift(`${txt} 👉 <b>TIADA SIAPA DAPAT SANGKAL!</b>`);
+    S.phase="REV_VIEW";
+  }
+  S.open=false;render();
+}
+
+function submitAcc(){
+  const {s,w,r}=S.act,v=S.vault,p=S.players[S.turn];
+  if(!confirm(`Sahkan Tuduhan Rasmi:\n• ${getC(s).name}\n• ${getC(w).name}\n• ${getC(r).name}\n\nJika salah, anda akan tersingkir!`))return;
+  if(s===v.suspect&&w===v.weapon&&r===v.room){
+    S.win=p.name;S.reason=`${p.name} meneka ketiga-tiga kad Murder Vault dengan tepat!`;S.phase="OVER";
+  }else{
+    p.elim=true;
+    S.logs.unshift(`<b>Pus.${S.round}:</b> 💀 Tuduhan Rasmi <b>${esc(p.name)}</b> SALAH & tersingkir!`);
+    const alive=S.players.filter(x=>!x.elim);
+    if(alive.length===1){
+      S.win=alive[0].name;S.reason=`Semua pemain lain tersingkir! ${alive[0].name} menang automatik.`;S.phase="OVER";
+    }else S.phase="WRONG";
+  }
+  render();
+}
+
+function nextTurn(){
+  const p=S.players[S.turn],{shown,dIdx}=S.act;
+  if(shown&&dIdx!==null)p.nb[shown]={s:"SEE",n:`❌ Dari ${S.players[dIdx].name} (P${S.round})`};
+  const n=S.players.length;
+  for(let i=1;i<=n;i++){
+    const c=(S.turn+i)%n;
+    if(c===0)S.round++;
+    if(!S.players[c].elim){S.turn=c;break;}
+  }
+  S.act={};S.phase="TURN";S.open=false;S.nb=false;render();
+}
+
+function toggleNoteHost(cid){
+  const nb=S.players[S.turn].nb[cid];
+  if(["OWN","PUB","SEE"].includes(nb.s))return;
+  const ord=["UNK","X","SUS"],lbl={UNK:"❓ Belum Pasti",X:"✖ Tolak / Dah Lihat",SUS:"🎯 Suspek Utama"};
+  const nxt=ord[(ord.indexOf(nb.s)+1)%3];
+  nb.s=nxt;nb.n=lbl[nxt];render();
+}
+
+function toggleNoteComp(cid){
+  const nb=S.comp.nb[cid];
+  if(["OWN","PUB"].includes(nb.s))return;
+  const ord=["UNK","X","SUS"],lbl={UNK:"❓ Belum Pasti",X:"✖ Tolak / Dah Lihat",SUS:"🎯 Suspek Utama"};
+  const nxt=ord[(ord.indexOf(nb.s)+1)%3];
+  nb.s=nxt;nb.n=lbl[nxt];render();
+}
+
+function renderQRModal(){
+  if(S.qrIdx===null||!S.players[S.qrIdx])return"";
+  const cp=S.players[S.qrIdx];
+  const appUrl=playerUrl(cp.code);
+  const txtPayload=`KAD RAHSIA ${cp.name.toUpperCase()}:\n`+cp.hand.map(id=>`• ${getC(id).e} ${getC(id).name} (${getC(id).t})`).join("\n")+(S.pub.length?`\n\nBukti Meja: `+S.pub.map(id=>getC(id).name).join(", "):"");
+  const qrData=S.qrTab==="TXT"?txtPayload:appUrl;
+
+  return`<div class="modal" onclick="if(event.target===this){S.qrIdx=null;render()}">
+    <div class="sheet" style="text-align:center">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div class="title">📲 QR Kad & Buku Nota: ${esc(cp.name)}</div>
+        <button class="btn btn-out btn-sm" onclick="S.qrIdx=null;render()">Tutup ✕</button>
+      </div>
+      <div class="tabs">
+        <div class="tab ${S.qrTab==="APP"?"act":""}" onclick="S.qrTab='APP';render()">📱 QR Web / Kod Buku Nota</div>
+        <div class="tab ${S.qrTab==="TXT"?"act":""}" onclick="S.qrTab='TXT';render()">📄 QR Teks Kad Terus</div>
+      </div>
+      <div class="sub" style="margin-bottom:6px">
+        ${S.qrTab==="APP"
+          ?`Imbas QR ini menggunakan kamera telefon <b>${esc(cp.name)}</b> untuk terus membuka <b>Kad Tangan & Buku Nota Interaktif</b> di telefonnya (perlu internet).`
+          :`Imbas QR ini guna kamera telefon biasa — senarai kad rahsia <b>${esc(cp.name)}</b> akan terus terpapar sebagai teks tanpa perlu internet!`}
+      </div>
+      ${S.qrTab==="APP"?qrWarn():""}
+      <div class="qr-wrap">${QR.makeSVG(qrData,200)}</div>
+      <div class="cat">Kod Ringkas Pemain (${esc(cp.name)})</div>
+      <div class="code-pill">${esc(cp.code)}</div>
+      <button class="btn btn-out btn-sm" style="margin:4px auto 10px" onclick="navigator.clipboard?.writeText('${cp.code}');alert('Kod Pemain disalin!')">📋 Salin Kod Pemain</button>
+      <div class="strip" style="justify-content:center;margin-top:6px">
+        ${S.players.map((x,i)=>`<div class="chip ${i===S.qrIdx?"act":""}" onclick="S.qrIdx=${i};render()">📲 ${esc(x.name)}</div>`).join("")}
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderHostNB(p){
+  if(!S.nb)return"";
+  const grp=(t,arr)=>`<div class="cat">${t}</div>`+arr.map(c=>{
+    const i=p.nb[c.id],cls={OWN:"s-own",PUB:"s-pub",SEE:"s-see",UNK:"s-unk",X:"s-x",SUS:"s-sus"}[i.s];
+    return`<div class="nb-r"><span>${c.e} <b>${c.name}</b></span><span class="nb-s ${cls}" onclick="toggleNoteHost('${c.id}')">${esc(i.n)}</span></div>`;
+  }).join("");
+  return`<div class="modal" onclick="if(event.target===this){S.nb=false;render()}"><div class="sheet">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div class="title">📓 Buku Nota: ${esc(p.name)}</div>
+      <button class="btn btn-out btn-sm" onclick="S.nb=false;render()">Tutup ✕</button>
+    </div>
+    <div class="sub">Ketik pada label <b>❓ Belum Pasti</b> untuk menanda secara manual.</div>
+    ${grp("Suspek",CARDS.suspects)}${grp("Senjata",CARDS.weapons)}${grp("Bilik",CARDS.rooms)}
+  </div></div>`;
+}
+
+// ============================================================================
+// PAPARAN MOD TELEFON PEMAIN (KAD TANGAN + BUKU NOTA SENDIRI)
+// ============================================================================
+function renderCompanion(){
+  const c=S.comp;
+  let h=`<div class="top">
+    <div class="brand">📱 KAD & NOTA PEMAIN</div>
+    <button class="btn btn-out btn-sm" onclick="if(confirm('Kembali ke Menu Utama / Mod Meja?')){location.hash='';S.appMode='HOST';render()}">🏠 Menu Utama</button>
+  </div>`;
+
+  if(!c.hand||!c.hand.length){
+    h+=`<div class="card">
+      <div class="title">Masuk Sebagai Pemain</div>
+      <div class="sub">Tampal <b>Kod Ringkas Pemain</b> yang dipaparkan pada Telefon Utama di meja untuk membuka Kad Tangan & Buku Nota Detektif anda:</div>
+      <div class="row">
+        <input placeholder="Contoh: U2FsaW18czEsdzMs..." value="${esc(c.codeInput)}" oninput="S.comp.codeInput=this.value">
+      </div>
+      <button class="btn btn-pri" onclick="const d=decodePlayerCode(S.comp.codeInput);if(!d)return alert('Kod Pemain tidak sah!');loadCompanionData(d,S.comp.codeInput.trim());render()">🔓 Buka Kad & Buku Nota Saya</button>
+      <button class="btn btn-out" onclick="S.appMode='HOST';render()">⬅️ Kembali ke Mod Telefon Meja</button>
+    </div>`;
+    return h;
+  }
+
+  // Modal Zoom 1 Kad (Untuk tunjuk bukti secara rahsia kepada kawan tanpa nampak kad lain!)
+  if(c.zoomCard){
+    const z=getC(c.zoomCard);
+    h+=`<div class="modal" onclick="S.comp.zoomCard=null;render()">
+      <div class="sheet" style="text-align:center;padding:28px 18px">
+        <div class="cat">🤫 BUKTI RAHSIA DARIPADA ${esc(c.name.toUpperCase())}</div>
+        <div class="item sel" style="max-width:240px;margin:16px auto;padding:24px 12px">
+          <span style="font-size:3.6rem">${z.e}</span>
+          <b style="font-size:1.25rem;margin-top:6px">${z.name}</b>
+          <span class="mini">${z.t}</span>
+        </div>
+        <div class="sub">Tunjukkan skrin ini kepada penyiasat sahaja, kemudian ketik di bawah untuk tutup.</div>
+        <button class="btn btn-ok" onclick="S.comp.zoomCard=null;render()">🔒 Sembunyikan Kad</button>
+      </div>
+    </div>`;
+  }
+
+  const grp=(t,arr)=>`<div class="cat">${t}</div>`+arr.map(card=>{
+    const i=c.nb[card.id]||{s:"UNK",n:"❓ Belum Pasti"};
+    const cls={OWN:"s-own",PUB:"s-pub",SEE:"s-see",UNK:"s-unk",X:"s-x",SUS:"s-sus"}[i.s];
+    return`<div class="nb-r"><span>${card.e} <b>${card.name}</b></span><span class="nb-s ${cls}" onclick="toggleNoteComp('${card.id}')">${esc(i.n)}</span></div>`;
+  }).join("");
+
+  h+=`<div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+      <div class="title" style="color:var(--pri)">🕵️ Detektif ${esc(c.name)}</div>
+      <span class="mini">${c.hand.length} Kad Tangan</span>
+    </div>
+    <div class="sub">Ketik mana-mana kad tangan di bawah untuk <b>besarkan 1 kad sahaja</b> apabila anda perlu menunjukkannya sebagai bukti kepada pemain lain.</div>
+    <div class="g2">
+      ${c.hand.map(id=>{
+        const card=getC(id);
+        return`<div class="item sel" onclick="S.comp.zoomCard='${id}';render()">
+          <span style="font-size:1.5rem">${card.e}</span>
+          <span>${card.name}</span>
+          <span class="mini">🔍 Ketik Untuk Tunjuk</span>
+        </div>`;
+      }).join("")}
+    </div>
+  </div>`;
+
+  if(c.pub&&c.pub.length>0){
+    h+=`<div class="card">
+      <div class="title" style="font-size:.9rem;margin-bottom:6px">📢 Bukti Awam Di Meja</div>
+      <div class="g3">${c.pub.map(id=>{const card=getC(id);return`<div class="item"><span>${card.e} ${card.name}</span></div>`;}).join("")}</div>
+    </div>`;
+  }
+
+  h+=`<div class="card">
+    <div class="title">📓 Buku Nota Detektif (${esc(c.name)})</div>
+    <div class="sub">Ketik pada <b>❓ Belum Pasti</b> untuk menanda kad yang telah anda lihat (✖) atau suspek utama (🎯).</div>
+    ${grp("Suspek",CARDS.suspects)}
+    ${grp("Senjata",CARDS.weapons)}
+    ${grp("Bilik",CARDS.rooms)}
+  </div>`;
+
+  return h;
+}
+
+// ============================================================================
+// RENDER UTAMA
+// ============================================================================
+function render(){
+  save();
+  const app=document.getElementById("app");
+  if(S.appMode==="PLAYER"){
+    app.innerHTML=renderCompanion();
+    return;
+  }
+
+  const p=S.players[S.turn];
+  let h=`<div class="top">
+    <div class="brand">🕵️ MISTERI MANSION</div>
+    <div style="display:flex;gap:6px">
+      <button class="btn btn-ok btn-sm" onclick="downloadFile()">⬇️ Fail .HTML</button>
+      ${S.phase!=="SETUP"?`<button class="btn btn-acc btn-sm" onclick="S.qrIdx=S.turn;render()">📲 QR Pemain</button>`:""}
+      ${S.phase!=="SETUP"?`<button class="btn btn-out btn-sm" onclick="if(confirm('Reset permainan?')){S.phase='SETUP';render()}">Reset</button>`:""}
+    </div>
+  </div>`;
+
+  if(S.phase!=="SETUP"){
+    h+=`<div class="strip">${S.players.map((x,i)=>`<div class="chip ${i===S.turn?"act":""} ${x.elim?"elim":""}" onclick="S.qrIdx=${i};render()" title="Ketik untuk buka QR ${esc(x.name)}">${i===S.turn?"▶ ":""}${esc(x.name)} (${x.hand.length})${x.elim?" 💀":""} 📲</div>`).join("")}</div>`;
+  }
+
+  if(S.phase==="SETUP"){
+    h+=`<div class="card">
+      <div class="title">Persediaan Meja Utama (3–6 Pemain)</div>
+      <div class="sub">Telefon ini menjadi <b>Meja Utama</b>. Setiap pemain boleh mengimbas <b>Kod QR</b> untuk menyimpan Kad Tangan & Buku Nota di telefon masing-masing (tanpa perlu pass telefon!).</div>
+      ${S.names.map((n,i)=>`<div class="row"><input value="${esc(n)}" placeholder="Nama Pemain ${i+1}" oninput="S.names[${i}]=this.value;save()">${S.names.length>3?`<button class="btn btn-out btn-sm" onclick="S.names.splice(${i},1);render()">✕</button>`:""}</div>`).join("")}
+      ${S.names.length<6?`<button class="btn btn-out" onclick="S.names.push('Pemain '+(S.names.length+1));render()">+ Tambah Pemain</button>`:""}
+      <button class="btn btn-pri" onclick="start()">🚀 Mula Siasatan & Jana QR</button>
+      <hr style="border-color:var(--bdr);margin:12px 0">
+      <button class="btn btn-acc" style="margin-bottom:0" onclick="S.appMode='PLAYER';S.comp.hand=[];render()">📱 Saya Pemain — Masukkan Kod Kad di Telefon Ini</button>
+    </div>`;
+  }
+  else if(S.phase==="DEAL"){
+    const cp=S.players[S.revIdx];
+    const appUrl=playerUrl(cp.code);
+    const txtPayload=`KAD RAHSIA ${cp.name.toUpperCase()}:\n`+cp.hand.map(id=>`• ${getC(id).e} ${getC(id).name} (${getC(id).t})`).join("\n")+(S.pub.length?`\n\nBukti Meja: `+S.pub.map(id=>getC(id).name).join(", "):"");
+    const qrData=S.qrTab==="TXT"?txtPayload:appUrl;
+
+    if(!S.open){
+      h+=`<div class="curtain">
+        <div>Agihan Kad Pemain (${S.revIdx+1}/${S.players.length})</div>
+        <div class="target">Giliran ${esc(cp.name)} Ambil Kad</div>
+        <div class="tabs" style="margin-top:8px">
+          <div class="tab ${S.qrTab==="APP"?"act":""}" onclick="S.qrTab='APP';render()">📱 QR Buku Nota Web</div>
+          <div class="tab ${S.qrTab==="TXT"?"act":""}" onclick="S.qrTab='TXT';render()">📄 QR Teks Kad Terus</div>
+        </div>
+        ${S.qrTab==="APP"?qrWarn():""}
+        <div class="qr-wrap">${QR.makeSVG(qrData,185)}</div>
+        <div class="sub" style="margin-top:6px">
+          <b>Pilihan 1:</b> Imbas QR di atas guna telefon <b>${esc(cp.name)}</b> (atau guna kod: <code style="color:var(--acc)">${esc(cp.code)}</code>).<br>
+          <b>Pilihan 2:</b> Tekan butang kuning di bawah jika mahu lihat kad terus di skrin ini.
+        </div>
+        <button class="btn btn-ok" onclick="if(S.revIdx+1<S.players.length)S.revIdx++;else S.phase='TURN';render()">✅ ${esc(cp.name)} Dah Scan QR -> Seterusnya</button>
+        <button class="btn btn-pri" onclick="S.open=true;render()">👁️ Lihat Kad ${esc(cp.name)} Di Skrin Ini</button>
+        <button class="btn btn-out btn-sm" style="margin:6px auto 0" onclick="S.phase='TURN';render()">Langkau ke Meja Siasatan ⏩</button>
+      </div>`;
+    }else{
+      h+=`<div class="card">
+        <div class="title">Kad Tangan ${esc(cp.name)}</div>
+        <div class="sub">Kad ini telah ditanda ✅ secara automatik dalam Buku Nota anda.</div>
+        <div class="g2" style="margin-bottom:12px">${cp.hand.map(id=>{const c=getC(id);return`<div class="item sel"><span>${c.e} ${c.name}</span><span class="mini">${c.t}</span></div>`;}).join("")}</div>
+        <button class="btn btn-ok" onclick="S.open=false;if(S.revIdx+1<S.players.length)S.revIdx++;else S.phase='TURN';render()">✅ Faham & Pemain Seterusnya</button>
+      </div>`;
+    }
+  }
+  else if(S.phase==="TURN"){
+    h+=`<div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+        <div class="title" style="color:var(--pri)">Giliran Siasatan: ${esc(p.name)} (Pus. ${S.round})</div>
+        <button class="btn btn-out btn-sm" onclick="S.qrIdx=S.turn;render()">📲 QR ${esc(p.name)}</button>
+      </div>
+      <div class="sub">Pemain boleh merujuk Buku Nota di telefon masing-masing, atau terus membuat siasatan di bawah:</div>
+      <button class="btn btn-pri" onclick="openForm('SUG')">🔍 Buat Siasatan Bilik (Suggestion)</button>
+      <button class="btn btn-err" onclick="openForm('ACC')">⚖️ Buat Tuduhan Rasmi (Murder Vault)</button>
+      <button class="btn btn-acc" style="margin-bottom:0" onclick="S.nb=true;render()">📓 Buka Buku Nota Di Skrin Ini (${esc(p.name)})</button>
+    </div>`;
+    if(S.pub.length>0)h+=`<div class="card"><div class="title" style="font-size:.9rem;margin-bottom:6px">📢 Bukti Awam Di Meja</div><div class="g3">${S.pub.map(id=>{const c=getC(id);return`<div class="item"><span>${c.e} ${c.name}</span></div>`;}).join("")}</div></div>`;
+    h+=`<div class="card"><div class="title" style="font-size:.9rem;margin-bottom:6px">📜 Log Siasatan Meja (${S.logs.length})</div>${S.logs.length?`<div class="log-box">${S.logs.map(l=>`<div class="log">${l}</div>`).join("")}</div>`:`<div class="sub">Belum ada rekod.</div>`}</div>${renderHostNB(p)}`;
+  }
+  else if(S.phase==="SUG_FORM"||S.phase==="ACC_FORM"){
+    const isAcc=S.phase==="ACC_FORM";
+    const sel=(t,arr,k,chk)=>`<div class="cat">${t}</div><div class="g3">${arr.map(c=>{
+      const lck=chk&&p.lastRoom===c.id;
+      return`<div class="item ${S.act[k]===c.id?"sel":""} ${lck?"lock":""}" onclick="S.act.${k}='${c.id}';render()">
+        <span>${c.e} ${c.name}</span>${lck?`<span class="mini">Bilik Tadi</span>`:""}
+      </div>`;
+    }).join("")}</div>`;
+    h+=`<div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div class="title">${isAcc?"⚖️ Tuduhan Rasmi":"🔍 Siasatan"}: ${esc(p.name)}</div>
+        <button class="btn btn-out btn-sm" onclick="S.nb=true;render()">📓 Nota</button>
+      </div>
+      ${sel("1. Pilih Suspek",CARDS.suspects,"s")}${sel("2. Pilih Senjata",CARDS.weapons,"w")}${sel("3. Pilih Bilik",CARDS.rooms,"r",!isAcc)}
+      <div class="row" style="margin-top:14px">
+        <button class="btn btn-out" style="flex:1" onclick="S.phase='TURN';render()">Batal</button>
+        <button class="btn ${isAcc?"btn-err":"btn-pri"}" style="flex:2" onclick="${isAcc?"submitAcc()":"submitSug()"}">${isAcc?"🔓 Buka Murder Vault!":"📢 Umum & Imbas"}</button>
+      </div>
+    </div>${renderHostNB(p)}`;
+  }
+  else if(S.phase==="DISP_CURTAIN"){
+    const dp=S.players[S.act.dIdx];
+    h+=`<div class="card"><div class="title">Keputusan Imbasan Meja</div>${S.act.logs.map(l=>`<div class="log">${l}</div>`).join("")}</div>
+    <div class="curtain">
+      <div>Penyangkalan Bukti</div>
+      <div class="target">${esc(dp.name)} Ada Bukti!</div>
+      <div class="sub">
+        <b>Cara 1 (Paling Pantas):</b> <b>${esc(dp.name)}</b> tunjuk terus 1 kad yang sepadan dari skrin telefonnya sendiri kepada <b>${esc(p.name)}</b>.<br>
+        <b>Cara 2:</b> Guna skrin meja ini untuk memilih & menunjukkan bukti.
+      </div>
+      <button class="btn btn-ok" onclick="nextTurn()">✅ ${esc(dp.name)} Dah Tunjuk Guna Telefon Sendiri -> Tamat Giliran</button>
+      <button class="btn btn-pri" onclick="S.phase='DISP_PICK';render()">🔐 Pilih & Tunjuk Bukti Di Skrin Meja Ini</button>
+    </div>`;
+  }
+  else if(S.phase==="DISP_PICK"){
+    const dp=S.players[S.act.dIdx];
+    h+=`<div class="card"><div class="title">🤫 Skrin Rahsia ${esc(dp.name)}</div><div class="sub">Ketik 1 kad di bawah untuk ditunjukkan kepada <b>${esc(p.name)}</b>:</div>
+    <div class="g2">${S.act.matches.map(id=>{const c=getC(id);return`<div class="item sel" onclick="S.act.shown='${id}';S.phase='REV_CURTAIN';render()"><span style="font-size:1.5rem">${c.e}</span><span>${c.name}</span><span class="mini">Ketik Untuk Tunjuk</span></div>`;}).join("")}</div></div>`;
+  }
+  else if(S.phase==="REV_CURTAIN"){
+    h+=`<div class="curtain"><div>Bukti Telah Dikunci!</div><div class="target">Tunjukkan Kepada ${esc(p.name)}</div>
+    <button class="btn btn-pri" onclick="S.phase='REV_VIEW';render()">👁️ Saya ${esc(p.name)} — Lihat Bukti</button></div>`;
+  }
+  else if(S.phase==="REV_VIEW"){
+    if(S.act.shown){
+      const c=getC(S.act.shown),dp=S.players[S.act.dIdx];
+      h+=`<div class="card" style="text-align:center"><div class="title">${esc(dp.name)} Menunjukkan Bukti Ini:</div>
+      <div class="item sel" style="max-width:200px;margin:14px auto"><span style="font-size:2.4rem">${c.e}</span><b>${c.name}</b></div>
+      <div class="sub">Tandakan ❌ pada kad ini dalam Buku Nota anda.</div>
+      <button class="btn btn-ok" onclick="nextTurn()">✅ Faham & Tamat Giliran</button></div>`;
+    }else{
+      h+=`<div class="card"><div class="title" style="color:var(--pri)">🔥 Tiada Siapa Dapat Menyangkal!</div>
+      ${S.act.logs.map(l=>`<div class="log">${l}</div>`).join("")}
+      <button class="btn btn-pri" onclick="nextTurn()">➡️ Tamatkan Giliran</button></div>`;
+    }
+  }
+  else if(S.phase==="WRONG"){
+    h+=`<div class="card" style="text-align:center"><div class="title" style="color:var(--err)">💀 Tuduhan Rasmi Anda SALAH!</div>
+    <div class="sub">Maaf <b>${esc(p.name)}</b>, anda kini berstatus <b>Ghost Player</b> (tiada lagi giliran menyiasat, tetapi kad anda masih aktif untuk disemak pemain lain).</div>
+    <button class="btn btn-pri" onclick="nextTurn()">➡️ Teruskan Permainan</button></div>`;
+  }
+  else if(S.phase==="OVER"){
+    const s=getC(S.vault.suspect),w=getC(S.vault.weapon),r=getC(S.vault.room);
+    h+=`<div class="card" style="text-align:center"><div class="title" style="font-size:1.4rem;color:var(--pri)">🏆 PEMENANG: ${esc(S.win)}!</div>
+    <div class="sub">${esc(S.reason)}</div><div class="cat">Kandungan Murder Vault</div>
+    <div class="g3" style="margin-bottom:14px"><div class="item sel">${s.e} ${s.name}</div><div class="item sel">${w.e} ${w.name}</div><div class="item sel">${r.e} ${r.name}</div></div>
+    <button class="btn btn-pri" onclick="S.phase='SETUP';render()">🔄 Main Semula</button></div>`;
+  }
+
+  h+=renderQRModal();
+  app.innerHTML=h;
+}
+render();
+</script>
+</body>
+</html>
