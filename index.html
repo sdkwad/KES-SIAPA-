@@ -227,7 +227,7 @@ const SAVE_KEY="misteri_mansion_qr_v1";
 // Alamat awam game (isi selepas hosting, contoh "https://cluedo-xxx.vercel.app/").
 // Telefon kawan tak boleh buka "file://" atau "localhost" telefon meja,
 // jadi QR guna alamat ini bila game dibuka secara tempatan.
-const PUBLIC_URL="";
+const PUBLIC_URL="https://kessiapa.vercel.app/";
 const isLocalHost=()=>location.protocol==="file:"||/^(localhost|127\.|\[::1\]|192\.168\.|10\.)/.test(location.hostname);
 const qrBroken=()=>isLocalHost()&&!PUBLIC_URL;
 const playerUrl=code=>`${isLocalHost()&&PUBLIC_URL?PUBLIC_URL:location.href.split("#")[0]}#c=${code}`;
